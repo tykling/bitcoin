@@ -597,7 +597,10 @@ bool SetStartOnSystemStartup(bool fAutoStart)
             TCHAR pszExePath[MAX_PATH];
             GetModuleFileName(NULL, pszExePath, sizeof(pszExePath));
 
-            TCHAR pszArgs[5] = TEXT("-min");
+            // Make the shortcut start the network we are currently running in
+            std::string args;
+            args = strprintf("-min -testnet=%i -regtest=%i", GetBoolArg("-testnet",0), GetBoolArg("-regtest",0));
+            TCHAR *pszArgs = args.c_str();
 
             // Set the path to the shortcut target
             psl->SetPath(pszExePath);
@@ -691,7 +694,10 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         optionFile << "[Desktop Entry]\n";
         optionFile << "Type=Application\n";
         optionFile << "Name=Bitcoin\n";
-        optionFile << "Exec=" << pszExePath << " -min\n";
+        // Make the shortcut start the network we are currently running in
+        std::string args;
+        args = strprintf("-min -testnet=%i -regtest=%i", GetBoolArg("-testnet",0), GetBoolArg("-regtest",0));
+        optionFile << "Exec=" << pszExePath << args.c_str() << "\n";
         optionFile << "Terminal=false\n";
         optionFile << "Hidden=false\n";
         optionFile.close();
